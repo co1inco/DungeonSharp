@@ -5,10 +5,10 @@ namespace Dungeon.Game.Core;
 
 public sealed class Entity : IComparable<Entity>, IEquatable<Entity>
 {
-    private static readonly ILogger Log = Serilog.Log.ForContext<Game>();
+    private static readonly ILogger Log = Serilog.Log.ForContext<Entity>();
     private static int _nextId = 0;
 
-    private readonly Dictionary<Type, IComponent> _components = [];
+    private readonly Dictionary<ComponentType, IComponent> _components = [];
 
 
     public Entity(string name)
@@ -30,55 +30,47 @@ public sealed class Entity : IComparable<Entity>, IEquatable<Entity>
 
     public void Add(IComponent component)
     {
-        _components[component.GetType()] = component;
-        // ECSManagement.InformAboutChanges(this);
+        _components[component.GetComponentType()] = component;
+        ECSManagement.InformAboutChanges(this);
         Log.Information("Added component {Component} to {Id}", component.GetType().Name, Id);
     }
 
     public void Remove<T>() where T : IComponent
     {
-        if (_components.Remove(typeof(T)))
+        if (_components.Remove(ComponentType.Is<T>()))
         {
-            // ECSManagement.InformAboutChanges(this);
+            ECSManagement.InformAboutChanges(this);
             Log.Information("Removed component {Component} from {Id}", typeof(T).Name, Id);
         }
     }
 
-    public void Remove(Type componentType)
+    public void Remove(ComponentType componentType)
     {
-#if DEBUG
-        if (!componentType.IsAssignableTo(typeof(IComponent)))
-            throw new Exception($"Component type {componentType} is not a component");
-#endif
         if (_components.Remove(componentType))
         {
             // ECSManagement.InformAboutChanges(this);
-            Log.Information("Removed component {Component} from {Id}", componentType.Name, Id);
+            Log.Information("Removed component {Component} from {Id}", componentType.Type.Name, Id);
         }
     }
     
     public Maybe<T> Fetch<T>() where T : IComponent
     {
-        if (_components.TryGetValue(typeof(T), out var component))
+        if (_components.TryGetValue(ComponentType.Is<T>(), out var component))
             return (T)component;
         return Maybe<T>.None;
     }
 
-    public Maybe<object> Fetch(Type componentType)
+    public Maybe<object> Fetch(ComponentType componentType)
     {
-#if DEBUG
-        if (!componentType.IsAssignableTo(typeof(IComponent)))
-            throw new Exception($"Component type {componentType} is not a component");
-#endif
         return _components.TryGetValue(componentType, out var component) 
             ? Maybe<object>.From(component) 
             : Maybe<object>.None;
     }
     
     public bool IsPresent<T>() where T : IComponent => 
-        _components.ContainsKey(typeof(T));
+        _components.ContainsKey(ComponentType.Is<T>());
     
-    public bool IsPresent(Type componentType) => 
+    public bool IsPresent(ComponentType componentType) => 
         _components.ContainsKey(componentType);
     
     public IEnumerable<IComponent> Components =>

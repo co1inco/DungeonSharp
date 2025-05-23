@@ -1,11 +1,8 @@
-﻿using System.ComponentModel;
-using Dungeon.Game.Core;
-using FluentAssertions;
-using NSubstitute;
+﻿using Dungeon.Game.Core;
 using Shouldly;
 using IComponent = Dungeon.Game.Core.IComponent;
 
-namespace Dungeon.Game.Test;
+namespace Dungeon.Game.Test.Core;
 
 [TestClass]
 public class EntityTest
@@ -50,7 +47,7 @@ public class EntityTest
     {
         //Assert
         _entity.Fetch<DummyComponent>().ShouldHaveValue(_testComponent);
-        _entity.Fetch(typeof(DummyComponent)).ShouldHaveValue(_testComponent);
+        _entity.Fetch(ComponentType.Is<DummyComponent>()).ShouldHaveValue(_testComponent);
     }
 
     [TestMethod]
@@ -61,14 +58,14 @@ public class EntityTest
 
         //Assert
         entity.Fetch<DummyComponent>().ShouldHaveNoValue();
-        entity.Fetch(typeof(DummyComponent)).ShouldHaveNoValue();
+        entity.Fetch(ComponentType.Is<DummyComponent>()).ShouldHaveNoValue();
     }
     
     [TestMethod]
     public void RemoveComponent()
     {
         //Act
-        _entity.Remove(typeof(DummyComponent));
+        _entity.Remove(ComponentType.Is<DummyComponent>());
         
         //Assert
         _entity.Fetch<DummyComponent>().ShouldHaveNoValue();
@@ -89,7 +86,7 @@ public class EntityTest
     {
         //Assert
         _entity.IsPresent<DummyComponent>().ShouldBeTrue();
-        _entity.IsPresent(typeof(DummyComponent)).ShouldBeTrue();
+        _entity.IsPresent(ComponentType.Is<DummyComponent>()).ShouldBeTrue();
     }
     
     [TestMethod]
