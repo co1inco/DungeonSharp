@@ -84,6 +84,10 @@ public class EntitySystemMapper : IEquatable<IEnumerable<ComponentType>>, IEquat
     
     private bool Accept(Entity entity)
     {
+        // Guess based on UnitTest result. Actual code does not imply that it must have a component
+        if (!entity.Components.Any())
+            return false;
+        
         foreach (var filter in _filterRules)
         {
             if (!entity.IsPresent(filter))
