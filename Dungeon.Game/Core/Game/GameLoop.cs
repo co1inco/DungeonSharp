@@ -6,9 +6,11 @@ using Dungeon.Game.Core.Systems;
 using Dungeon.Game.Core.Utils;
 using Dungeon.Game.Helper;
 using Microsoft.VisualBasic;
+using OpenTK.Graphics.OpenGL4;
 using Serilog;
 using SharpGDX;
 using SharpGDX.Desktop;
+using SharpGDX.Graphics;
 using SharpGDX.Utils.Viewports;
 
 namespace Dungeon.Game.Core;
@@ -103,36 +105,60 @@ public class GameLoop : ScreenAdapter
         DungeonGame.GetSystem<LevelSystem>().Execute(x => x.Execute());
     }
     
-    public override void Render(float delta)
-    {
-        if (_doSetup)
-            Setup();
-        // DrawSystem
-        // base.Render(delta);
-        // TODO
-    }
-
     private void CreateSystems()
     {
         // ECSManagement.Add(new PositionSystem())
         ECSManagement.Add(new CameraSystem());
-        ECSManagement.Add(new LevelSystem(null!, new DummyGenerator(), OnLevelLoad));
-        // ECSManagement.Add(new DrawSystem())
+        ECSManagement.Add(new LevelSystem(DrawSystem.Painter, new SimpleGenerator(), OnLevelLoad));
+        ECSManagement.Add(new DrawSystem());
         // ECSManagement.Add(new VelocitySystem());
         // ECSManagement.Add(new PlayerSystem());
     }
 
-    private class DummyGenerator : IGenerator
-    {
-        public ILevel Level(DesignLabel label, LevelSize size)
-        {
-            return new NullLevel();
-        }
-    }
-    
     private void PlaceOnLevelStart(Entity entity) => throw new NotImplementedException();
-
     
+    
+    
+    public override void Render(float delta)
+    {
+        if (_doSetup)
+            Setup();
+        
+        DrawSystem.Batch.SetProjectionMatrix(CameraSystem.Camera.Combined);
+        Frame();
+        ClearScreen();
+
+        foreach (var system in ECSManagement.Systems)
+        {
+            if (_newLevelWasLoadedInThisLoop)
+                break;
+
+            system.LastExecutedInFrame++;
+            if (system.IsRunning && system.LastExecutedInFrame >= system.ExecuteEveryXFrames)
+            {
+                system.Execute();
+                system.LastExecutedInFrame = 0;
+            }
+        }
+        _newLevelWasLoadedInThisLoop = false;
+        CameraSystem.Camera.update();
+        
+        if (_stage is not null)
+            UpdateStage(_stage);
+    }
+
+    private void ClearScreen()
+    {
+        GDX.GL.glClearColor(0, 0, 0, 1);
+        GDX.GL.glClear(IGL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    private void Frame()
+    {
+        // fullscreenKey()
+        PreRunConfiguration.UserOnFrame?.Invoke();
+    }
+
     private class ApplicationListener(GameLoop gameLoop) : IApplicationListener
     {
         private IScreen? _screen;

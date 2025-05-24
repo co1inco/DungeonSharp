@@ -12,7 +12,7 @@ public abstract class System
     
     protected static readonly ILogger Log = Serilog.Log.ForContext<System>();
     private readonly ComponentType[] _filterRules;
-    protected bool _run = false;
+    protected bool _run = true;
 
     
     public System(int executeEveryXFrames, params ComponentType[] filterRules)

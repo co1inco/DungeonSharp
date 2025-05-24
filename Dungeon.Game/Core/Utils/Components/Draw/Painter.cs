@@ -1,16 +1,10 @@
 ﻿using System.Drawing;
 using Dungeon.Game.Core.Systems;
+using SharpGDX.Graphics;
 using SharpGDX.Graphics.G2D;
+using SharpGDX.Mathematics;
 
 namespace Dungeon.Game.Core.Utils.Components.Draw;
-
-public record PainterConfig(
-    float XOffset,
-    float YOffset,
-    float XScaling,
-    float YScaling,
-    int TintColor = -1
-);
 
 public class Painter
 {
@@ -21,10 +15,10 @@ public class Painter
         _batch = batch;
     }
 
-    public void Draw(Point position, string texturePath, PainterConfig config)
+    public void Draw(Vector2 position, string texturePath, PainterConfig config)
     {
-        float realX = position.X + config.XOffset;
-        float realY = position.Y + config.YOffset;
+        float realX = position.x + config.XOffset;
+        float realY = position.y + config.YOffset;
 
         if (!CameraSystem.IsPointInFrustum(realX, realX))
             return;

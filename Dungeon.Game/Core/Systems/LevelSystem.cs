@@ -1,7 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using Dungeon.Game.Core.Components;
+using Dungeon.Game.Core.Level;
 using Dungeon.Game.Core.Level.Elements;
+using Dungeon.Game.Core.Level.Elements.Tiles;
 using Dungeon.Game.Core.Level.Generator;
+using Dungeon.Game.Core.Level.Utils;
 using Dungeon.Game.Core.Utils.Components.Draw;
 using Dungeon.Game.Helper;
 using Serilog;
@@ -67,7 +70,26 @@ public sealed class LevelSystem : System
 
     private void DrawLevel()
     {
-        throw new NotImplementedException();
+        Dictionary<string, PainterConfig> mapping = new();
+
+        foreach (var row in CurrentLevel.Layout)
+        {
+            foreach (var tile in row)
+            {
+                if (tile.LevelElement != LevelElement.Skip 
+                    && !IsPitTileAndOpen(tile)
+                    && tile.Visible)
+                {
+                    var path = tile.TexturePath;
+                    if (!mapping.TryGetValue(path, out var config) || config.TintColor != tile.TintColor)
+                    {
+                        config = PainterConfig.WithTextureParam(path, XOffset, YOffset);
+                        mapping[path] = config;
+                    }
+                    _painter.Draw(tile.Position, path, config);
+                }
+            }
+        }
     }
     
     
@@ -76,6 +98,11 @@ public sealed class LevelSystem : System
     private bool IsOnOpenEndTile(Entity entity)
     {
         throw new NotImplementedException();
+    }
+
+    private bool IsPitTileAndOpen(Tile tile)
+    {
+        return tile is PitTile { IsOpen: true };
     }
 
     private Maybe<ILevel> IsOnDor(Entity entity)
