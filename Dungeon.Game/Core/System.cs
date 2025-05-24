@@ -51,14 +51,14 @@ public abstract class System
         OnEntityRemove?.Invoke(entity);
 
 
-    public void Run()
+    public virtual void Run()
     {
         if (!_run)
             Log.Information("{System} is now running", GetType().Name);
         _run = true;
     }
 
-    public void Stop()
+    public virtual void Stop()
     {
         if (_run)
             Log.Information("{System} is now paused", GetType().Name);
@@ -81,29 +81,51 @@ public abstract class System
         // requireComponents.ValidateFilterRules();
         return DungeonGame.Entities(requireComponents);
     }
-}
-
-public static class SystemExtensions
-{
-    public static IEnumerable<Entity> FilteredEntities<T>(this System system) 
-        where T: IComponent => 
-        system.FilteredEntities(ComponentType.Is<T>());
     
-    public static IEnumerable<Entity> FilteredEntities<T1, T2>(this System system) 
+    public IEnumerable<Entity> FilteredEntities<T>() 
+        where T: IComponent => 
+        FilteredEntities(ComponentType.Is<T>());
+    
+    public IEnumerable<Entity> FilteredEntities<T1, T2>() 
         where T1: IComponent  
         where T2: IComponent => 
-        system.FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>());
+        FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>());
     
-    public static IEnumerable<Entity> FilteredEntities<T1, T2, T3>(this System system)
+    public IEnumerable<Entity> FilteredEntities<T1, T2, T3>(System system)
         where T1: IComponent  
         where T2: IComponent 
         where T3: IComponent => 
-        system.FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>(), ComponentType.Is<T3>());
+        FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>(), ComponentType.Is<T3>());
     
-    public static IEnumerable<Entity> FilteredEntities<T1, T2, T3, T4>(this System system) 
+    public IEnumerable<Entity> FilteredEntities<T1, T2, T3, T4>(System system) 
         where T1: IComponent  
         where T2: IComponent 
         where T3: IComponent  
         where T4: IComponent => 
-        system.FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>(), ComponentType.Is<T3>(), ComponentType.Is<T4>());
+        FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>(), ComponentType.Is<T3>(), ComponentType.Is<T4>());
 }
+
+// public static class SystemExtensions
+// {
+//     public static IEnumerable<Entity> FilteredEntities<T>(this System system) 
+//         where T: IComponent => 
+//         system.FilteredEntities(ComponentType.Is<T>());
+//     
+//     public static IEnumerable<Entity> FilteredEntities<T1, T2>(this System system) 
+//         where T1: IComponent  
+//         where T2: IComponent => 
+//         system.FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>());
+//     
+//     public static IEnumerable<Entity> FilteredEntities<T1, T2, T3>(this System system)
+//         where T1: IComponent  
+//         where T2: IComponent 
+//         where T3: IComponent => 
+//         system.FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>(), ComponentType.Is<T3>());
+//     
+//     public static IEnumerable<Entity> FilteredEntities<T1, T2, T3, T4>(this System system) 
+//         where T1: IComponent  
+//         where T2: IComponent 
+//         where T3: IComponent  
+//         where T4: IComponent => 
+//         system.FilteredEntities(ComponentType.Is<T1>(), ComponentType.Is<T2>(), ComponentType.Is<T3>(), ComponentType.Is<T4>());
+// }

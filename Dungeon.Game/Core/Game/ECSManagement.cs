@@ -1,25 +1,26 @@
 ﻿using System.Collections.Specialized;
 using CSharpFunctionalExtensions;
+using Dungeon.Game.Core.Components;
+using Dungeon.Game.Core.Level;
+using Dungeon.Game.Core.Level.Elements;
 using Dungeon.Game.Core.Utils;
 using Dungeon.Game.Helper;
 using Serilog;
+using SharpGDX.Scenes.Scene2D;
+using Action = System.Action;
 
 namespace Dungeon.Game.Core;
-
-public interface ILevel {}
-
-public record struct NullLevel() : ILevel;
 
 public sealed class ECSManagement
 {
     private static readonly ILogger Log = Serilog.Log.ForContext<ECSManagement>();
-    private static readonly OrderedDictionary Systems = new();
-    private static readonly Dictionary<ILevel, ISet<EntitySystemMapper>> LevelStorageMap;
+    private static readonly Dictionary<Type, System> _systems = new(); // (SystemType, System)
+    private static readonly Dictionary<ILevel, ISet<EntitySystemMapper>> _levelStorageMap;
     private static ISet<EntitySystemMapper> _activeEntityStorage = new HashSet<EntitySystemMapper>();
 
     static ECSManagement()
     {
-        LevelStorageMap = new Dictionary<ILevel, ISet<EntitySystemMapper>>
+        _levelStorageMap = new Dictionary<ILevel, ISet<EntitySystemMapper>>
         {
             { new NullLevel(), _activeEntityStorage }
         };
@@ -32,19 +33,19 @@ public sealed class ECSManagement
     }
 
 
+    #region Entities
+
     public static void Add(Entity entity)
     {
-        foreach (var entitySystemMapper in _activeEntityStorage)
-        {
-            entitySystemMapper.Add(entity);
-        }
+        _activeEntityStorage.ForEach(x => x.Add(entity));
         // _activeEntityStorage.ForEach((x) -> x.Add(entity));
         Log.Information("Entity: {Entity} will be added to the Game.", entity);
     }
 
     public static void Remove(Entity entity)
     {
-        throw new NotImplementedException();
+        _activeEntityStorage.ForEach(x => x.Remove(entity));
+        Log.Information("Entity: {Entity} will be removed from the Game.", entity);
     }
 
     public static IEnumerable<Entity> Entities() =>
@@ -67,7 +68,101 @@ public sealed class ECSManagement
             return CreateEntitySystemMapper(withComponents).Entities();
         }
     }
+    
+    public static void RemoveAllEntities()
+    {
+        AllEntities().ForEach(Remove);
+        Log.Information("All entities have ben removed from the game.");
+    }
 
+    public static IEnumerable<Entity> AllEntities()
+    {
+        return _levelStorageMap.Values
+            .SelectMany(x => x
+                .SelectMany(y => y
+                    .Entities()));
+    }
+    
+    public static Maybe<Entity> Find(IComponent component) => 
+        AllEntities().TryFirst(x => x.Components.Contains(component));
+    
+    #endregion
+
+    #region Systems
+    
+    public static IEnumerable<System> Systems => 
+        _systems.Values;
+
+    public static Maybe<T> GetSystem<T>() where T : System =>
+        _systems.TryGetValue(typeof(T), out var system) 
+            ? (T)system 
+            : Maybe<T>.None;
+    
+        
+    public static void System<T>(Action<T> consumer) where T : System
+    {
+        if (_systems.TryGetValue(typeof(T), out var system))
+        {
+            consumer((T)system);
+        }
+    }
+    
+    public static Maybe<System> Add(System system)
+    {
+        _systems.TryGetValue(system.GetType(), out var currentSystem);
+        _systems[system.GetType()] = system;
+
+        _activeEntityStorage
+            .Where(x => x.Equals(system.FilterRules))
+            .TryFirst()
+            .Match(
+                x => x.Add(system), 
+                () => CreateEntitySystemMapper(system.FilterRules).Add(system));
+        Log.Information("A new {System} was added to the game", system.GetType().Name);
+        return currentSystem as System;
+    }
+    
+    public static void Remove<T>() where T : System => 
+        RemoveSystem(typeof(T));
+    
+    private static void RemoveSystem(Type systemType)
+    {
+        if (_systems.Remove(systemType, out var system))
+        {
+            _activeEntityStorage.ForEach(x => x.Remove(system));
+        }
+    }
+    
+    public static void RemoveAllSystems()
+    {
+        _systems.Keys
+            .ToList() // Can modify the original collection while iterating it
+            .ForEach(RemoveSystem);
+    } 
+    
+    #endregion
+
+    // ReadOnly dictionary?
+    public static Dictionary<ILevel, ISet<EntitySystemMapper>> LevelStorageMap =>
+        _levelStorageMap;
+
+    public static void ActiveEntityStorage(ISet<EntitySystemMapper> entityStorage)
+    {
+        _activeEntityStorage = entityStorage;
+    }
+    
+    public static void ActiveEntityStorage(IEnumerable<EntitySystemMapper> entityStorage)
+    {
+        _activeEntityStorage = new HashSet<EntitySystemMapper>(entityStorage);
+    }
+   
+
+    public static Maybe<Entity> Hero() => Entities()
+        .Where(x => x.IsPresent<PlayerComponent>())
+        .TryFirst();
+
+    
+    
     private static EntitySystemMapper CreateEntitySystemMapper(IEnumerable<ComponentType> filter)
     {
         var mapper = new EntitySystemMapper(filter);
@@ -75,4 +170,32 @@ public sealed class ECSManagement
         Entities().ForEach(x => mapper.Add(x));
         return mapper;
     }
+}
+
+public record struct NullLevel() : ILevel
+{
+    
+    public void OnFirstLoad(Action callback) { }
+
+    public void OnLoad() { }
+
+    public int GetNodeCount() => 0;
+
+    public void AddTile(Tile tile) { }
+
+    public void RemoveTile(Tile tile) { }
+
+    public IEnumerable<Tile> Tiles => [];
+
+    Tile ILevel.StartTile { get; set; }
+
+    public IEnumerable<Tile> EndTiles() => [];
+
+    public Tile[][] Layout => [];
+    
+    public void AddFloorTile() { }
+
+    public void AddWallTile() { }
+
+    public void AddHoleTile() { }
 }

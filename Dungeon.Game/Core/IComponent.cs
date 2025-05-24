@@ -17,7 +17,7 @@ public readonly struct ComponentType : IEquatable<ComponentType>
         Type = type;
     }
 
-    public static ComponentType Is<T>() => new ComponentType(typeof(T));
+    public static ComponentType Is<T>() where T : IComponent => new ComponentType(typeof(T));
     
     // Not sure if this is good...
     public static implicit operator ComponentType(Type type) => new ComponentType(type);

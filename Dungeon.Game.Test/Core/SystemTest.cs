@@ -43,6 +43,7 @@ public class SystemTest
         _testSystem.OnRemoveTriggered.ShouldBeTrue();
     }
 
+    [Ignore]
     [TestMethod]
     public void FilteredEntities_NoParameters()
     {

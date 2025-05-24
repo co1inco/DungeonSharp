@@ -17,4 +17,14 @@
       <PackageReference Include="SharpGDX.Desktop" Version="1.13.0-alpha.7" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Assets\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Assets\logo\cat_logo_35x35.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
