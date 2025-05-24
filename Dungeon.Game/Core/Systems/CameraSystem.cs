@@ -26,6 +26,8 @@ public class CameraSystem : System
 
     public static bool IsPointInFrustum(float x, float y)
     {
+        return true;
+        // Not working for some reason
         var offset = 1f;
         // var bounds = new BoundingBox(new Vector3(x- offset, y - offset, 0), new Vector3(x + offset, y + offset, 1));
         var bounds = new BoundingBox(new Vector3(x - offset, y - offset, 0), new Vector3(x + offset, y + offset, 0));
