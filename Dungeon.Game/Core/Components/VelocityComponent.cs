@@ -14,7 +14,7 @@ public sealed class VelocityComponent : IComponent
     
     public Vector2 Velocity { get; set; } = Vector2.Zero;
     
-    public Vector2 CurrentVelocity { get; set; } = Vector2.Zero;
+    // public Vector2 CurrentVelocity { get; set; } = Vector2.Zero;
 
     public Action<Entity> OnWallHitCallback { get; set; } = _ => { };
 

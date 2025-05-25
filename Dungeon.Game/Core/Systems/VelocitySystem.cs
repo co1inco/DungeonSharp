@@ -33,13 +33,14 @@ public sealed class VelocitySystem : System
         var vc = ec.Component1;
         var pc = ec.Component2;
         
-        var velocity = vc.CurrentVelocity.cpy();
+        var velocity = vc.Velocity.cpy();
         var maxSpeed = Math.Max(Math.Abs(vc.Velocity.x), Math.Abs(vc.Velocity.y));
 
         if (velocity.len() > maxSpeed)
         {
-            velocity.nor();
-            velocity.scl(maxSpeed);
+            velocity.setLength(Math.Max(Math.Abs(velocity.x), Math.Abs(velocity.y)));
+            // velocity.nor();
+            // velocity.scl(maxSpeed);
         }
 
         if (GDX.Graphics is not null)
@@ -68,30 +69,32 @@ public sealed class VelocitySystem : System
             hitWall = true;
             pc.Position = new Vector2(newPosition.x, pc.Position.y);
             MovementAnimation(entity, vc);
-            vc.CurrentVelocity.y = 0;
+            vc.Velocity.y = 0;
         }
         else if (IsAccessible(level.TileAt(new Vector2(pc.Position.x, newPosition.y)), canEnterOpenPits))
         {
             hitWall = true;
             pc.Position = new Vector2(pc.Position.x, newPosition.y);
             MovementAnimation(entity, vc);
-            vc.CurrentVelocity.y = 0;
+            vc.Velocity.y = 0;
         }
         else
         {
             hitWall = true;
+            vc.Velocity.x = 0;
+            vc.Velocity.y = 0;
         }
 
         if (hitWall)
             vc.OnWallHitCallback(entity);
 
         var friction = (level?.TileAt(pc.Position)).GetFrictionOrDefault();
-        vc.CurrentVelocity.scl(Math.Min(1.0f, 1.0f - friction));
+        vc.Velocity.scl(Math.Min(1.0f, 1.0f - friction));
 
-        if (vc.CurrentVelocity.x < 0.01f)
-            vc.CurrentVelocity.x = 0.0f;
-        if (vc.CurrentVelocity.y < 0.01f)
-            vc.CurrentVelocity.y = 0.0f;
+        if (vc.Velocity.x < 0.01f)
+            vc.Velocity.x = 0.0f;
+        if (vc.Velocity.y < 0.01f)
+            vc.Velocity.y = 0.0f;
         
     }
 

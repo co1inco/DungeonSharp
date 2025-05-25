@@ -68,9 +68,10 @@ public class VelocitySystemTest
     {
         //Arrange
         _tile.SetAccessible();
-        _velocityComponet.CurrentVelocity = _velocity;
+        _velocityComponet.Velocity = _velocity;
 
-        var velocity = _velocityComponet.CurrentVelocity.cpy();
+        // FIX: Testing a function by copy pasting its content is not real testing anything, is it... 
+        var velocity = _velocityComponet.Velocity.cpy();
         if (velocity.len() > Math.Max(Math.Abs(_velocityComponet.Velocity.x), Math.Abs(_velocityComponet.Velocity.y)))
         {
             velocity.setLength(Math.Max(Math.Abs(_velocityComponet.Velocity.x), Math.Abs(_velocityComponet.Velocity.y)));
@@ -80,12 +81,84 @@ public class VelocitySystemTest
         _velocitySystem.Execute();
         
         //Assert
-        _positionComponet.Position.x.ShouldBe(_startPosition.x + _velocity.x, 0.001);
-        _positionComponet.Position.y.ShouldBe(_startPosition.y + _velocity.y, 0.001);
+        _positionComponet.Position.x.ShouldBe(_startPosition.x + velocity.x, 0.001);
+        _positionComponet.Position.y.ShouldBe(_startPosition.y + velocity.y, 0.001);
         
     }
 
+    [TestMethod]
+    public void UpdateValidMoveWithNegativeVelocity()
+    {
+        //Arrange
+        _tile.SetAccessible();
+        _velocityComponet.Velocity = _velocity.scl(-1.0f);
 
+        // FIX: Testing a function by copy pasting its content is not real testing anything, is it... 
+        var velocity = _velocityComponet.Velocity.cpy();
+        if (velocity.len() > Math.Max(Math.Abs(_velocityComponet.Velocity.x), Math.Abs(_velocityComponet.Velocity.y)))
+        {
+            velocity.setLength(Math.Max(Math.Abs(_velocityComponet.Velocity.x), Math.Abs(_velocityComponet.Velocity.y)));
+        }
+        
+        //Act
+        _velocitySystem.Execute();
+        
+        //Assert
+        _positionComponet.Position.x.ShouldBe(_startPosition.x + velocity.x, 0.001);
+        _positionComponet.Position.y.ShouldBe(_startPosition.y + velocity.y, 0.001);
+        
+    }
+    
+    [TestMethod]
+    public void UpdateInValidMove()
+    {
+        //Arrange
+        _tile.SetUnAccessible();
+        _velocityComponet.Velocity = _velocity;
+
+        // FIX: Testing a function by copy pasting its content is not real testing anything, is it... 
+        var velocity = _velocityComponet.Velocity.cpy();
+        if (velocity.len() > Math.Max(Math.Abs(_velocityComponet.Velocity.x), Math.Abs(_velocityComponet.Velocity.y)))
+        {
+            velocity.setLength(Math.Max(Math.Abs(_velocityComponet.Velocity.x), Math.Abs(_velocityComponet.Velocity.y)));
+        }
+        
+        //Act
+        _velocitySystem.Execute();
+        
+        //Assert
+        _positionComponet.Position.x.ShouldBe(_startPosition.x, 0.001);
+        _positionComponet.Position.y.ShouldBe(_startPosition.y, 0.001);
+        _velocityComponet.Velocity.x.ShouldBe(0);
+        _velocityComponet.Velocity.y.ShouldBe(0);
+    }
+    
+    [TestMethod]
+    public void UpdateInValidNegativeMove()
+    {
+        //Arrange
+        _tile.SetUnAccessible();
+        _velocityComponet.Velocity = _velocity.scl(-1.0f);
+
+        // FIX: Testing a function by copy pasting its content is not real testing anything, is it... 
+        var velocity = _velocityComponet.Velocity.cpy();
+        if (velocity.len() > Math.Max(Math.Abs(_velocityComponet.Velocity.x), Math.Abs(_velocityComponet.Velocity.y)))
+        {
+            velocity.setLength(Math.Max(Math.Abs(_velocityComponet.Velocity.x), Math.Abs(_velocityComponet.Velocity.y)));
+        }
+        
+        //Act
+        _velocitySystem.Execute();
+        
+        //Assert
+        _positionComponet.Position.x.ShouldBe(_startPosition.x, 0.001);
+        _positionComponet.Position.y.ShouldBe(_startPosition.y, 0.001);
+        _velocityComponet.Velocity.x.ShouldBe(0);
+        _velocityComponet.Velocity.y.ShouldBe(0);
+    }
+    
+    
+    
     private class DummyTile : Tile
     {
         public DummyTile(Vector2 position) 
