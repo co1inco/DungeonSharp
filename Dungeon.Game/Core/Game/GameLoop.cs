@@ -11,6 +11,7 @@ using Serilog;
 using SharpGDX;
 using SharpGDX.Desktop;
 using SharpGDX.Graphics;
+using SharpGDX.Mathematics;
 using SharpGDX.Utils.Viewports;
 
 namespace Dungeon.Game.Core;
@@ -107,11 +108,11 @@ public class GameLoop : ScreenAdapter
     
     private void CreateSystems()
     {
-        // ECSManagement.Add(new PositionSystem())
+        ECSManagement.Add(new PositionSystem());
         ECSManagement.Add(new CameraSystem());
         ECSManagement.Add(new LevelSystem(DrawSystem.Painter, new SimpleGenerator(), OnLevelLoad));
         ECSManagement.Add(new DrawSystem());
-        // ECSManagement.Add(new VelocitySystem());
+        ECSManagement.Add(new VelocitySystem());
         // ECSManagement.Add(new PlayerSystem());
     }
 
@@ -127,7 +128,7 @@ public class GameLoop : ScreenAdapter
         DrawSystem.Batch.SetProjectionMatrix(CameraSystem.Camera.Combined);
         Frame();
         ClearScreen();
-
+        
         foreach (var system in ECSManagement.Systems)
         {
             if (_newLevelWasLoadedInThisLoop)

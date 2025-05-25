@@ -22,9 +22,9 @@ public class SimpleGenerator : IGenerator
 
         public Maybe<Tile> TileAt(Coordinate coordinate)
         {
-            if (Layout.Length < coordinate.Y && coordinate.Y >= 0)
+            if (coordinate.Y < Layout.Length && coordinate.Y >= 0)
             {
-                if (Layout[coordinate.Y].Length < coordinate.X && coordinate.X >= 0)
+                if (coordinate.X < Layout[coordinate.Y].Length && coordinate.X >= 0)
                 {
                     return Layout[coordinate.Y][coordinate.X];
                 } 

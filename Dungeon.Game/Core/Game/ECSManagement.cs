@@ -15,7 +15,9 @@ namespace Dungeon.Game.Core;
 public sealed class ECSManagement
 {
     private static readonly ILogger Log = Serilog.Log.ForContext<ECSManagement>();
+    // TODO: should be ordered to execute systems in order of adding them 
     private static readonly Dictionary<Type, System> _systems = new(); // (SystemType, System)
+    private static readonly List<System> _orderedSystems = new();
     private static readonly Dictionary<ILevel, ISet<EntitySystemMapper>> _levelStorageMap;
     private static ISet<EntitySystemMapper> _activeEntityStorage = new HashSet<EntitySystemMapper>();
 
@@ -92,7 +94,7 @@ public sealed class ECSManagement
     #region Systems
     
     public static IEnumerable<System> Systems => 
-        _systems.Values;
+        _orderedSystems;
 
     public static Maybe<T> GetSystem<T>() where T : System =>
         _systems.TryGetValue(typeof(T), out var system) 
@@ -113,6 +115,12 @@ public sealed class ECSManagement
         _systems.TryGetValue(system.GetType(), out var currentSystem);
         _systems[system.GetType()] = system;
 
+        var oldIndex = _orderedSystems.IndexOf(system);
+        if (oldIndex >= 0)
+            _orderedSystems[oldIndex] = system;
+        else 
+            _orderedSystems.Add(system);
+        
         _activeEntityStorage
             .Where(x => x.Equals(system.FilterRules))
             .TryFirst()
@@ -130,6 +138,7 @@ public sealed class ECSManagement
     {
         if (_systems.Remove(systemType, out var system))
         {
+            _orderedSystems.Remove(system);
             _activeEntityStorage.ForEach(x => x.Remove(system));
         }
     }
