@@ -1,5 +1,7 @@
-﻿using Dungeon.Game.Core.Level.Elements;
+﻿using CSharpFunctionalExtensions;
+using Dungeon.Game.Core.Level.Elements;
 using Dungeon.Game.Core.Level.Elements.Tiles;
+using Dungeon.Game.Core.Level.Utils;
 using Dungeon.Game.Core.Systems;
 using SharpGDX.Mathematics;
 
@@ -18,7 +20,19 @@ public class SimpleGenerator : IGenerator
 
         public Tile[][] Layout { get; private set;  } = [];
 
-        public Tile StartTile { get => Layout[0][0]; set {} }
+        public Maybe<Tile> TileAt(Coordinate coordinate)
+        {
+            if (Layout.Length < coordinate.Y && coordinate.Y >= 0)
+            {
+                if (Layout[coordinate.Y].Length < coordinate.X && coordinate.X >= 0)
+                {
+                    return Layout[coordinate.Y][coordinate.X];
+                } 
+            }
+            return Maybe<Tile>.None;
+        }
+        
+        public Tile StartTile { get => Layout[5][5]; set {} }
         
         public IEnumerable<Tile> EndTiles()
         {
@@ -29,7 +43,7 @@ public class SimpleGenerator : IGenerator
         {
              
         }
-
+        
         public void OnLoad()
         {
             var path = "Assets/dungeon/default/floor/floor_1.png";
@@ -61,6 +75,7 @@ public class SimpleGenerator : IGenerator
         {
             throw new NotImplementedException();
         }
+        
 
         public void AddFloorTile()
         {

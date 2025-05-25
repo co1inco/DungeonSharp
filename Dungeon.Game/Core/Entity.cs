@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Dungeon.Game.Core.Utils.Components;
 using Serilog;
 
 namespace Dungeon.Game.Core;
@@ -133,4 +134,10 @@ public sealed class Entity : IComparable<Entity>, IEquatable<Entity>
     
     #endregion
 
+}
+
+public static class EntityExtensions
+{
+    public static T FetchOrThrow<T>(this Entity entity) where T : IComponent =>
+        entity.Fetch<T>().GetValueOrThrow(MissingComponentException.Create<T>(entity));
 }

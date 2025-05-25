@@ -26,7 +26,8 @@ public interface ILevel
     
     
     Tile[][] Layout { get; }
-    
+
+    Maybe<Tile> TileAt(Coordinate coordinate);
     
     
     
@@ -43,17 +44,21 @@ public static class LevelExtensions
     public static (int, int) Size(this ILevel level) => 
         (level.Layout[0].Length, level.Layout.Length);
 
-    public static Maybe<Tile> TileAt(this ILevel level, Coordinate coordinate)
-    {
-        if (level.Layout.Length < coordinate.Y && coordinate.Y >= 0)
-        {
-            if (level.Layout[coordinate.Y].Length < coordinate.X && coordinate.X >= 0)
-            {
-                return level.Layout[coordinate.Y][coordinate.X];
-            } 
-        }
-        return Maybe<Tile>.None;
-    }
+    // public static Maybe<Tile> TileAt(this ILevel level, Coordinate coordinate)
+    // {
+    //     if (level.Layout.Length < coordinate.Y && coordinate.Y >= 0)
+    //     {
+    //         if (level.Layout[coordinate.Y].Length < coordinate.X && coordinate.X >= 0)
+    //         {
+    //             return level.Layout[coordinate.Y][coordinate.X];
+    //         } 
+    //     }
+    //     return Maybe<Tile>.None;
+    // }
+    
+    public static Maybe<Tile> TileAt(this ILevel level, Vector2 coordinate) => 
+        level.TileAt(coordinate.ToCoordinate());
+
 
     public static Maybe<Tile> TileAt(this ILevel level, Coordinate coordinate, PositionComponent.Direction direction) =>
         level.TileAt(coordinate + direction switch
@@ -95,4 +100,17 @@ public static class LevelExtensions
         entity.Fetch<PositionComponent>()
             .GetValueOrThrow(new Exception("Missing position component"))
             .Position;
+    
+    // TODO
+    public static Maybe<Tile> FreeTile(this ILevel level)
+    {
+        // TODO: select random tile
+        if (level.Layout.Any() && level.Layout[0].Any())
+            return level.Layout[0][0];
+        return Maybe<Tile>.None;
+    }
+        
+
+    public static Maybe<Vector2> FreePosition(this ILevel level) =>
+        level.FreeTile().Map(x => x.Position.cpy());
 }

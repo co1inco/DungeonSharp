@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿
+using SharpGDX.Mathematics;
 
 namespace Dungeon.Game.Core.Level.Utils;
 
@@ -22,5 +23,5 @@ public record Coordinate(int X, int Y)
 public static class CoordinateExtensions
 {
     public static Coordinate ToCoordinate(this Vector2 point) => 
-        new Coordinate((int)point.X, (int)point.Y);
+        new Coordinate((int)point.x, (int)point.y);
 }

@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using Dungeon.Game.Core.Components;
 using Dungeon.Game.Core.Level;
 using Dungeon.Game.Core.Level.Elements;
+using Dungeon.Game.Core.Level.Utils;
 using Dungeon.Game.Core.Utils;
 using Dungeon.Game.Helper;
 using Serilog;
@@ -192,7 +193,9 @@ public record struct NullLevel() : ILevel
     public IEnumerable<Tile> EndTiles() => [];
 
     public Tile[][] Layout => [];
-    
+
+    public Maybe<Tile> TileAt(Coordinate coordinate) => Maybe<Tile>.None;
+
     public void AddFloorTile() { }
 
     public void AddWallTile() { }
