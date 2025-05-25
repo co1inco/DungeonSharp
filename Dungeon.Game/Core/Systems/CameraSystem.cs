@@ -53,7 +53,7 @@ public class CameraSystem : System
         {
             var aspectRation = (GDX.Graphics.GetWidth() / (float)GDX.Graphics.GetHeight());
             Camera.viewportWidth = ViewportWidth();
-            Camera.viewportHeight = ViewportHeight() / aspectRation;
+            Camera.viewportHeight = ViewportWidth() / aspectRation;
         }
         
         Camera.update();
