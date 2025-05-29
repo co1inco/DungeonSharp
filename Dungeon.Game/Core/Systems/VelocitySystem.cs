@@ -43,6 +43,7 @@ public sealed class VelocitySystem : System
             // velocity.scl(maxSpeed);
         }
 
+        
         if (GDX.Graphics is not null)
         {
             velocity.scl(GDX.Graphics.GetDeltaTime());
@@ -109,6 +110,10 @@ public sealed class VelocitySystem : System
         if (!entity.Fetch<DrawComponent>().TryGetValue(out var dc))
             return;
 
+        if (velocity.Velocity.x != 0 || velocity.Velocity.y != 0)
+        {
+        }
+        
         // TODO
     }
 }
