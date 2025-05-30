@@ -1,4 +1,5 @@
-﻿using SharpGDX.Graphics;
+﻿using Dungeon.Game.Core.Utils.Components.Path;
+using SharpGDX.Graphics;
 
 namespace Dungeon.Game.Core.Utils.Components.Draw;
 
@@ -11,7 +12,7 @@ public record PainterConfig(
 )
 {
     public static PainterConfig WithTextureParam(
-        string path,
+        IPath path,
         float xOffset,
         float yOffset,
         int tintColor = -1) =>

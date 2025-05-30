@@ -5,6 +5,7 @@ using Dungeon.Game.Core.Level.Elements;
 using Dungeon.Game.Core.Level.Generator;
 using Dungeon.Game.Core.Level.Utils;
 using Dungeon.Game.Core.Systems;
+using Dungeon.Game.Core.Utils.Components.Path;
 using NSubstitute;
 using SharpGDX.Mathematics;
 using SharpGDX.Utils;
@@ -162,7 +163,7 @@ public class VelocitySystemTest
     private class DummyTile : Tile
     {
         public DummyTile(Vector2 position) 
-            : base("", position, DesignLabel.Default)
+            : base(new SimplePath("",0), position, DesignLabel.Default)
         {
         }
 

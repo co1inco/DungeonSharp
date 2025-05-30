@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Dungeon.Game.Core.Systems;
+using Dungeon.Game.Core.Utils.Components.Path;
 using SharpGDX.Graphics;
 using SharpGDX.Graphics.G2D;
 using SharpGDX.Mathematics;
@@ -15,7 +16,7 @@ public class Painter
         _batch = batch;
     }
 
-    public void Draw(Vector2 position, string texturePath, PainterConfig config)
+    public void Draw(Vector2 position, IPath texturePath, PainterConfig config)
     {
         float realX = position.x + config.XOffset;
         float realY = position.y + config.YOffset;

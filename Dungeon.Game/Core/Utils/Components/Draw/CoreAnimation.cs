@@ -1,6 +1,8 @@
-﻿namespace Dungeon.Game.Core.Utils.Components.Draw;
+﻿using Dungeon.Game.Core.Utils.Components.Path;
 
-public record CoreAnimation(string Path, int Priority)
+namespace Dungeon.Game.Core.Utils.Components.Draw;
+
+public record CoreAnimation(string Path, int Priority) : IPath
 {
     public static readonly CoreAnimation Idle = new("idle", CoreAnimationProperties.IDLE.Priority);
     public static readonly CoreAnimation IdleLeft = new("idle_left", CoreAnimationProperties.IDLE.Priority);

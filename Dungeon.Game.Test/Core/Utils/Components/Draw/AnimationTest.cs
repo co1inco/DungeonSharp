@@ -1,4 +1,5 @@
 ﻿using Dungeon.Game.Core.Utils.Components.Draw;
+using Dungeon.Game.Core.Utils.Components.Path;
 using Dungeon.Game.Helper;
 using Shouldly;
 
@@ -7,7 +8,10 @@ namespace Dungeon.Game.Test.Core.Utils.Components.Draw;
 [TestClass]
 public class AnimationTest
 {
-
+    private readonly IPath _a = new SimplePath("a"); 
+    private readonly IPath _b = new SimplePath("b"); 
+    private readonly IPath _c = new SimplePath("c"); 
+    private readonly IPath _d = new SimplePath("d"); 
 
     [TestMethod]
     public void ConstructorShouldThrow()
@@ -20,18 +24,18 @@ public class AnimationTest
     public void GetNextAnimationFrame()
     {
         //Arrange
-        var animation = Animation.FromCollection(["a", "b", "c"], frameTimes: 10);
+        var animation = Animation.FromCollection([_a, _b, _c], frameTimes: 10);
 
         //Act
         
         //Assert
-        animation.NextAnimationTexturePath().ShouldBe("a");
+        animation.NextAnimationTexturePath().ShouldBe(_a);
         Enumerable.Repeat(0, 10).ForEach(_ => animation.NextAnimationTexturePath());
-        animation.NextAnimationTexturePath().ShouldBe("b");
+        animation.NextAnimationTexturePath().ShouldBe(_b);
         Enumerable.Repeat(0, 10).ForEach(_ => animation.NextAnimationTexturePath());
-        animation.NextAnimationTexturePath().ShouldBe("c");
+        animation.NextAnimationTexturePath().ShouldBe(_c);
         Enumerable.Repeat(0, 10).ForEach(_ => animation.NextAnimationTexturePath());
-        animation.NextAnimationTexturePath().ShouldBe("a");
+        animation.NextAnimationTexturePath().ShouldBe(_a);
         Enumerable.Repeat(0, 10).ForEach(_ => animation.NextAnimationTexturePath());
     }
 
@@ -39,7 +43,7 @@ public class AnimationTest
     public void IsFinished_NoMoreFrameAndNotLooping()
     {
         //Arrange
-        var animation = Animation.FromCollection(["a", "b"], frameTimes: 1, looping: false);
+        var animation = Animation.FromCollection([_a, _b], frameTimes: 1, looping: false);
 
         animation.IsFinished().ShouldBeFalse();
         
@@ -54,7 +58,7 @@ public class AnimationTest
     public void IsFinished_OneMoreFrameAndNotLooping()
     {
         //Arrange
-        var animation = Animation.FromCollection(["a", "b"], frameTimes: 1, looping: false);
+        var animation = Animation.FromCollection([_a, _b], frameTimes: 1, looping: false);
 
         //Assert
         animation.IsFinished().ShouldBeFalse();
@@ -64,7 +68,7 @@ public class AnimationTest
     public void IsFinished_NoMoreFrameAndLooping()
     {
         //Arrange
-        var animation = Animation.FromCollection(["a", "b"], frameTimes: 1, looping: true);
+        var animation = Animation.FromCollection([_a, _b], frameTimes: 1, looping: true);
 
         animation.IsFinished().ShouldBeFalse();
         
@@ -79,28 +83,28 @@ public class AnimationTest
     public void NextAnimation_NoLoopingFrameTime1()
     {
         //Arrange
-        var animation = Animation.FromCollection(["a", "b"], frameTimes: 1, looping: false);
+        var animation = Animation.FromCollection([_a, _b], frameTimes: 1, looping: false);
 
         //Act
 
         //Assert
-        animation.NextAnimationTexturePath().ShouldBe("a");
-        animation.NextAnimationTexturePath().ShouldBe("b");
-        animation.NextAnimationTexturePath().ShouldBe("b");
+        animation.NextAnimationTexturePath().ShouldBe(_a);
+        animation.NextAnimationTexturePath().ShouldBe(_b);
+        animation.NextAnimationTexturePath().ShouldBe(_b);
     }
     
     [TestMethod]
     public void NextAnimation_NoLoopingFrameTime2()
     {
         //Arrange
-        var animation = Animation.FromCollection(["a", "b"], frameTimes: 2, looping: false);
+        var animation = Animation.FromCollection([_a, _b], frameTimes: 2, looping: false);
 
         //Act
 
         //Assert
-        animation.NextAnimationTexturePath().ShouldBe("a");
-        animation.NextAnimationTexturePath().ShouldBe("a");
-        animation.NextAnimationTexturePath().ShouldBe("b");
-        animation.NextAnimationTexturePath().ShouldBe("b");
+        animation.NextAnimationTexturePath().ShouldBe(_a);
+        animation.NextAnimationTexturePath().ShouldBe(_a);
+        animation.NextAnimationTexturePath().ShouldBe(_b);
+        animation.NextAnimationTexturePath().ShouldBe(_b);
     }
 }

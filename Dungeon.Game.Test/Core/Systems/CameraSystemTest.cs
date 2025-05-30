@@ -4,6 +4,7 @@ using Dungeon.Game.Core.Level;
 using Dungeon.Game.Core.Level.Elements;
 using Dungeon.Game.Core.Level.Generator;
 using Dungeon.Game.Core.Systems;
+using Dungeon.Game.Core.Utils.Components.Path;
 using NSubstitute;
 using SharpGDX.Graphics;
 using SharpGDX.Mathematics;
@@ -28,7 +29,7 @@ public class CameraSystemTest
     [TestInitialize]
     public void Initialize()
     {
-        _tile = Substitute.For<Tile>("", TestPoint, DesignLabel.Default);
+        _tile = Substitute.For<Tile>(new SimplePath(""), TestPoint, DesignLabel.Default);
         _level = Substitute.For<ILevel>();
         _level.StartTile.Returns(_tile);
         _cameraSystem = new CameraSystem();

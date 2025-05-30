@@ -6,6 +6,7 @@ using Dungeon.Game.Core.Level.Elements.Tiles;
 using Dungeon.Game.Core.Level.Generator;
 using Dungeon.Game.Core.Level.Utils;
 using Dungeon.Game.Core.Utils.Components.Draw;
+using Dungeon.Game.Core.Utils.Components.Path;
 using Dungeon.Game.Helper;
 using Serilog;
 
@@ -70,7 +71,7 @@ public sealed class LevelSystem : System
 
     private void DrawLevel()
     {
-        Dictionary<string, PainterConfig> mapping = new();
+        Dictionary<IPath, PainterConfig> mapping = new();
 
         foreach (var row in CurrentLevel.Layout)
         {

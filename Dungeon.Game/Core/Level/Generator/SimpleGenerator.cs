@@ -3,6 +3,7 @@ using Dungeon.Game.Core.Level.Elements;
 using Dungeon.Game.Core.Level.Elements.Tiles;
 using Dungeon.Game.Core.Level.Utils;
 using Dungeon.Game.Core.Systems;
+using Dungeon.Game.Core.Utils.Components.Path;
 using SharpGDX.Mathematics;
 
 namespace Dungeon.Game.Core.Level.Generator;
@@ -46,7 +47,7 @@ public class SimpleGenerator : IGenerator
         
         public void OnLoad()
         {
-            var path = "Assets/dungeon/default/floor/floor_1.png";
+            var path = new SimplePath("Assets/dungeon/default/floor/floor_1.png", 1);
             
             Layout = new Tile[10][];
 

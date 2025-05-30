@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Dungeon.Game.Core.Level.Generator;
 using Dungeon.Game.Core.Level.Utils;
+using Dungeon.Game.Core.Utils.Components.Path;
 using SharpGDX.Mathematics;
 
 namespace Dungeon.Game.Core.Level;
@@ -10,7 +11,7 @@ public abstract class Tile
     public const float DEFAULT_FRICTION = 0.8f;
 
 
-    protected Tile(string texture, Vector2 position, DesignLabel designLabel)
+    protected Tile(IPath texture, Vector2 position, DesignLabel designLabel)
     {
         LevelElement = LevelElement.Skip;
         Position = position;
@@ -25,7 +26,7 @@ public abstract class Tile
 
     public virtual bool Visible { get; protected set; } = true;
 
-    public virtual string TexturePath { get; }
+    public virtual IPath TexturePath { get; }
     
     public int TintColor { get; protected set; }
     

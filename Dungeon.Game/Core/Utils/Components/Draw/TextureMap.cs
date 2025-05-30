@@ -1,4 +1,5 @@
-﻿using SharpGDX.Graphics;
+﻿using Dungeon.Game.Core.Utils.Components.Path;
+using SharpGDX.Graphics;
 
 namespace Dungeon.Game.Core.Utils.Components.Draw;
 
@@ -10,14 +11,13 @@ public class TextureMap
     private readonly Dictionary<string, Texture> _map = new();
 
     
-    public Texture TextureAt(string path)
+    public Texture TextureAt(IPath path)
     {
-        var fullPath = Path.GetFullPath(path);
-        if (_map.TryGetValue(fullPath, out var texture))
+        if (_map.TryGetValue(path.Path, out var texture))
             return texture;
         
-        texture = new Texture(fullPath);
-        _map.Add(fullPath, texture);
+        texture = new Texture(path.Path);
+        _map.Add(path.Path, texture);
         return texture;
     }
 

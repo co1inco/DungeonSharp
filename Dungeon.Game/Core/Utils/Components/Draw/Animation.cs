@@ -1,4 +1,6 @@
-﻿namespace Dungeon.Game.Core.Utils.Components.Draw;
+﻿using Dungeon.Game.Core.Utils.Components.Path;
+
+namespace Dungeon.Game.Core.Utils.Components.Draw;
 
 public sealed class Animation
 {
@@ -7,12 +9,12 @@ public sealed class Animation
     public const bool DEFAULT_IS_LOOP = true;
     public const int DEFAULT_PRIORITY = 200;
 
-    private readonly List<string> _animationFrames;
+    private readonly List<IPath> _animationFrames;
     private int _currentFrameIndex;
     private int _frameTimeCounter;
 
 
-    private Animation(IEnumerable<string> animationFrames, int frameTimes, bool looping, int priority)
+    private Animation(IEnumerable<IPath> animationFrames, int frameTimes, bool looping, int priority)
     {
         _animationFrames = animationFrames.ToList();
         if (!_animationFrames.Any())
@@ -25,28 +27,28 @@ public sealed class Animation
     }
 
     public static Animation FromCollection(
-        IEnumerable<string> animationFrames,
+        IEnumerable<IPath> animationFrames,
         int frameTimes = DEFAULT_FRAME_TIME,
         bool looping = DEFAULT_IS_LOOP) =>
         new(animationFrames, frameTimes, looping, CoreAnimationProperties.DEFAULT.Priority);
     
     public static Animation FromCollection(
-        IEnumerable<string> animationFrames,
+        IEnumerable<IPath> animationFrames,
         int priority,
         int frameTimes = DEFAULT_FRAME_TIME,
         bool looping = DEFAULT_IS_LOOP) =>
         new(animationFrames, frameTimes, looping, priority);
     
-    public static Animation FromSingleImage(string fileName, int frameTimes = DEFAULT_FRAME_TIME) =>
+    public static Animation FromSingleImage(IPath fileName, int frameTimes = DEFAULT_FRAME_TIME) =>
         new Animation([fileName], frameTimes, DEFAULT_IS_LOOP, DEFAULT_PRIORITY);
     
     public static Animation DefaultAnimation() =>
-        new Animation([MISSING_TEXTURE], DEFAULT_FRAME_TIME, DEFAULT_IS_LOOP, 0);
+        new Animation([ new SimplePath(MISSING_TEXTURE) ], DEFAULT_FRAME_TIME, DEFAULT_IS_LOOP, 0);
 
 
 
 
-    public IReadOnlyCollection<string> AnimationFrames => _animationFrames;
+    public IReadOnlyCollection<IPath> AnimationFrames => _animationFrames;
     
     public bool Loop { get; set; }
 
@@ -57,7 +59,7 @@ public sealed class Animation
 
     public int Duration => TimeBetweenFrames * _animationFrames.Count;
 
-    public string NextAnimationTexturePath()
+    public IPath NextAnimationTexturePath()
     {
         // TODO: split tasks of this function
         //This "also" advances the frame counter by one. should be separated into GetAnimationFrame and Advance or something

@@ -4,6 +4,8 @@ using Dungeon.Game.Core.Level.Elements;
 using Dungeon.Game.Core.Level.Elements.Tiles;
 using Dungeon.Game.Core.Level.Generator;
 using Dungeon.Game.Core.Systems;
+using Dungeon.Game.Core.Utils.Components.Draw;
+using Dungeon.Game.Core.Utils.Components.Path;
 using NSubstitute;
 using SharpGDX.Mathematics;
 using Shouldly;
@@ -31,7 +33,7 @@ public class PositionSystemTest
         DungeonGame.Add(new LevelSystem(null!, null!, () => { }));
 
         DungeonGame.CurrentLevel = Substitute.For<ILevel>();
-        DungeonGame.CurrentLevel.Layout.Returns([[new FloorTile("", new Vector2(0, 0), DesignLabel.Default)]]);
+        DungeonGame.CurrentLevel.Layout.Returns([[new FloorTile(new SimplePath("",0), new Vector2(0, 0), DesignLabel.Default)]]);
     }
 
     [TestCleanup]
